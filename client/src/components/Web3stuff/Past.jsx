@@ -9,26 +9,19 @@ function Past() {
     async function getPastEvent() {
         if (contract) {
             const deployTx = await web3.eth.getTransaction(txhash)
-            const currentBlock = await web3.eth.getBlockNumber()
-            const results = await contract.getPastEvents("Transfer", { fromBlock:deployTx.blockNumber , toBlock: currentBlock });
-            const Transfers = results.map((transfer) => transfer.returnValues);
-            let PastE = [];
-
-            for (const Transfer of Transfers) {
-                PastE.push(
-                  {
-                    from: Transfer.from,
-                    to: Transfer.to,
-                    value: Transfer.value
-                  }
-                );
-            }
-            setPastEvents(PastE);
-
+            const results = await contract.getPastEvents("Transfer", { fromBlock:deployTx.blockNumber , toBlock: "latest" });
+            const Transfers = results.map((transfer) => {
+                let PastE = {from:null, to:null, value:null};
+                PastE.from = transfer.returnValues.from;
+                PastE.to = transfer.returnValues.to;
+                PastE.value = transfer.returnValues.value;
+                return PastE;
+              });
+            setPastEvents(Transfers);
         }
     }
     getPastEvent();
-  }, [contract]);
+  });
 
   return (
     <div className="past">
@@ -42,9 +35,9 @@ function Past() {
             </tr>
         </thead>
         <tbody>
-        {pastEvents.map((event) => {
+        {pastEvents.map((event, index) => {
                 return (
-                <tr>
+                <tr key={index}>
                     <td>{event.from}</td>
                     <td>{event.to}</td>
                     <td>{event.value}</td>

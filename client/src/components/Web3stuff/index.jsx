@@ -4,12 +4,11 @@ import Address from "./Address";
 import Balance from "./Balance";
 import Button from "./Button";
 import Past from "./Past";
-import Listen from "./Listen";
 
 
 function Web3stuff() {
   const { state: { contract, accounts } } = useEth();
-  const [balance, setBalance] = useState();
+  const [balance, setBalance] = useState(0);
 
   const refreshBalance = async () => {
     const value = await contract.methods.balanceOf(accounts[0]).call({ from: accounts[0] });
@@ -30,7 +29,6 @@ function Web3stuff() {
         {balance==0 ? <div className="bal">Vous n'avez aucun token pour le moment.</div> : <Balance balance={balance}  />} 
         <Button refreshBalance={refreshBalance}/>
         <Past />
-        <Listen />
     </div>
   );
 }
